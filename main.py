@@ -4,15 +4,47 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QApplication,
     QWidget,
+    QGridLayout,
+    QPushButton,
+    QHBoxLayout,
+    QVBoxLayout,
+    QLabel,
 )
 from PySide6.QtGui import (
     QAction,
-    QIcon,
+    QIcon
 )
 
-class Wrapperwindow(QWidget):
+
+class WrapperWindow(QWidget):
     def __init__(self):
         super().__init__()
+        grid = QGridLayout(self)
+        ul_block = GumWrapperBlock()
+        ur_block = GumWrapperBlock()
+        dl_block = GumWrapperBlock()
+        dr_block = GumWrapperBlock()
+        grid.addLayout(ul_block, 0, 0)
+        grid.addLayout(ur_block, 0, 1)
+        grid.addLayout(dl_block, 1, 0)
+        grid.addLayout(dr_block, 1, 1)
+
+
+
+class GumWrapperBlock(QVBoxLayout):
+    def __init__(self):
+        super().__init__()
+        refresh_button = QPushButton('Refresh')
+        change_button = QPushButton('Change')
+        edit_button = QPushButton('Edit')
+        sublayout = QHBoxLayout()
+        sublayout.addWidget(refresh_button)
+        sublayout.addWidget(change_button)
+        sublayout.addWidget(edit_button)
+        self.addLayout(sublayout)
+        self.addWidget(QLabel())
+
+
 
 class MainWindow(QMainWindow):
 
@@ -40,6 +72,8 @@ class MainWindow(QMainWindow):
         self.save_action.setIcon(QIcon(f"{os.path.abspath(os.getcwd())}/icons/icons8-save-40.png"))
         self.save_action.triggered.connect(self.save_clicked)
         self.bar.addAction(self.save_action)
+
+        self.setCentralWidget(WrapperWindow())
 
     @Slot()
     def refresh_clicked(self):
