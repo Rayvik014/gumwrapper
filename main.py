@@ -9,21 +9,25 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QLabel,
+    QSizePolicy,
+    QLineEdit,
 )
 from PySide6.QtGui import (
     QAction,
-    QIcon
+    QIcon,
+    QPixmap,
 )
 
 
 class WrapperWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         grid = QGridLayout(self)
-        ul_block = GumWrapperBlock()
-        ur_block = GumWrapperBlock()
-        dl_block = GumWrapperBlock()
-        dr_block = GumWrapperBlock()
+        ul_block = GumWrapperBlock('pics/empty_877_620.png')
+        ur_block = GumWrapperBlock('pics/empty_877_620.png')
+        dl_block = GumWrapperBlock('pics/empty_877_620.png')
+        dr_block = GumWrapperBlock('pics/empty_877_620.png')
         grid.addLayout(ul_block, 0, 0)
         grid.addLayout(ur_block, 0, 1)
         grid.addLayout(dl_block, 1, 0)
@@ -31,20 +35,49 @@ class WrapperWindow(QWidget):
 
 
 
+
+
 class GumWrapperBlock(QVBoxLayout):
-    def __init__(self):
+    def __init__(self, image_path):
         super().__init__()
         refresh_button = QPushButton('Refresh')
-        change_button = QPushButton('Change')
         edit_button = QPushButton('Edit')
         sublayout = QHBoxLayout()
         sublayout.addWidget(refresh_button)
-        sublayout.addWidget(change_button)
         sublayout.addWidget(edit_button)
+
+        mark_label = QLabel("Mark: ")
+        mark_label_lineedit = QLineEdit()
+        model_label = QLabel("Model: ")
+        model_label_lineedit = QLineEdit()
+        year_label = QLabel("Year: ")
+        year_label_lineedit = QLineEdit()
+        sublayout.addWidget(mark_label)
+        sublayout.addWidget(mark_label_lineedit)
+        sublayout.addWidget(model_label)
+        sublayout.addWidget(model_label_lineedit)
+        sublayout.addWidget(year_label)
+        sublayout.addWidget(year_label_lineedit)
+
         self.addLayout(sublayout)
-        self.addWidget(QLabel())
+        image_label = QLabel()
+        image_label.setScaledContents(True)
+        pixmap = QPixmap(image_path)
+        pixmap.scaled(877,620,aspectMode=Qt.KeepAspectRatio)
+        image_label.setPixmap(pixmap)
+        image_label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.addWidget(image_label)
 
+        refresh_button.clicked.connect(self.refresh_clicked)
+        edit_button.clicked.connect(self.edit_clicked)
 
+    @Slot()
+    def refresh_clicked(self):
+        pass
+
+    @Slot()
+    def edit_clicked(self):
+        pass
 
 class MainWindow(QMainWindow):
 
@@ -55,7 +88,7 @@ class MainWindow(QMainWindow):
 
         self.refresh_action = QAction(self, text="Refresh All")
         self.refresh_action.setIcon(QIcon(f"{os.path.abspath(os.getcwd())}/icons/icons8-refresh-40.png"))
-        self.refresh_action.triggered.connect(self.refresh_clicked)
+        self.refresh_action.triggered.connect(self.refresh_all_clicked)
         self.bar.addAction(self.refresh_action)
 
         self.clear_action = QAction(self, text="Clear All")
@@ -73,10 +106,13 @@ class MainWindow(QMainWindow):
         self.save_action.triggered.connect(self.save_clicked)
         self.bar.addAction(self.save_action)
 
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+
         self.setCentralWidget(WrapperWindow())
 
+
     @Slot()
-    def refresh_clicked(self):
+    def refresh_all_clicked(self):
         pass
 
     @Slot()
@@ -95,5 +131,7 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
+    window.resize(1315, 1000)
+    window.setMinimumSize(100, 70)
     window.show()
     app.exec()
